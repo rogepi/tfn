@@ -2,8 +2,10 @@ import { NextPage } from 'next'
 import { DocumentArrowUpIcon, PlusIcon } from '@heroicons/react/24/solid'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm } from 'react-hook-form'
+import { useContract, useMintNFT } from '@thirdweb-dev/react'
 import { useRef, useState } from 'react'
 import useFile from '~/hooks/use-file'
+import { ADDRESS } from '~/config/address'
 
 type Metadata = {
   name: string
@@ -18,7 +20,11 @@ const Upload: NextPage = () => {
   const { register, handleSubmit, watch, reset } = useForm<Metadata>()
   const ref = useRef<HTMLInputElement>(null)
 
+  const { contract } = useContract(ADDRESS.NFT_COLLECTION, "nft-collection")
+  const { mutate: mintNFT, isLoading, error } = useMintNFT(contract)
+
   const onSubmit = (data: Metadata) => {
+    data.media = file as string
     console.log(data)
   }
 
@@ -137,9 +143,9 @@ const Upload: NextPage = () => {
 
       <input
         type="file"
-        // ref={fileInputRef}
-        // onChange={handleChange}
-        {...register('media')}
+        ref={fileInputRef}
+        onChange={handleChange}
+        // {...register('media')}
         hidden
         aria-hidden
       />
