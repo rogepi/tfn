@@ -1,27 +1,27 @@
-import { useAddress, useContract, useOwnedNFTs } from '@thirdweb-dev/react'
-import { NFT, ThirdwebSDK } from '@thirdweb-dev/sdk'
 import { NextPage } from 'next'
-import Link from 'next/link'
+import { useMemo, useState } from 'react'
+import clsx from 'clsx'
 import NFTList from '~/components/nft-list'
-import { ADDRESS } from '~/config/address'
-import useSWR from 'swr'
-
-const Address = () => {
-  const fetcher = (...args) => fetch(...args).then((res) => res.json())
-  const { data, isLoading, error } = useSWR(`/api/nft/${useAddress()}`, fetcher)
-  console.log(data)
-
-  if (error) return <div>failed to load</div>
-  if (isLoading) return <div>loading...</div>
-
-  // 渲染数据
-  return <div>hello {data}!</div>
-}
+import { useNFTs } from '~/hooks/use-nfts'
 
 const Profile: NextPage = () => {
-  const { contract } = useContract(ADDRESS.NFT_COLLECTION, 'nft-collection')
-  const { data } = useOwnedNFTs(contract, useAddress())
-  console.log(data)
+  const [active, setActive] = useState('all')
+  const { nft_list, isLoading } = useNFTs()
+
+  const showList = useMemo(() => {
+    if (active === 'all')
+      return nft_list
+    else if (active === 'in Sales') {
+      return nft_list?.filter(item => item.isSales)
+    } else {
+      return nft_list?.filter(item => !item.isSales)
+    }
+  }
+    , [active, nft_list])
+
+  const activeToggle = (item: string) => {
+    setActive(item)
+  }
 
   return (
     <>
@@ -33,13 +33,22 @@ const Profile: NextPage = () => {
       </section>
       <div>
         <div className="mb-3 flex items-center gap-3 font-bold">
-          <Link className="rounded p-1 px-2 text-xl text-black hover:bg-gray-100" href="/profile">All</Link>
-          <Link className="rounded p-1 px-2 text-lg text-gray-400 hover:bg-gray-100" href="/profile/sales">In Sales</Link>
-          <Link className="rounded p-1 px-2 text-lg text-gray-400 hover:bg-gray-100" href="/profile/unsold">Unsold</Link>
+          {
+            ['all', 'in Sales', 'unsold'].map(item =>
+              <li key={item} className={clsx(
+                'cursor-pointer list-none rounded p-1 px-2 capitalize hover:bg-gray-100',
+                item === active ? 'text-xl text-black' : 'text-lg text-gray-400'
+              )} onClick={() => activeToggle(item)}
+              >{item}</li>
+            )
+          }
         </div>
-        <NFTList nftList={data as NFT[]} />
-        <Address />
-
+        {(isLoading || showList === undefined) ?
+          <div className='min-h-[300px] pt-[10vh] text-center'>
+            loading...</div>
+          :
+          <NFTList nftList={showList} />
+        }
       </div>
     </>
   )
