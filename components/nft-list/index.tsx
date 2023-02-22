@@ -1,13 +1,9 @@
 import Image from "next/image"
 import { useAddress, useContract, useNFT, useOwnedNFTs } from "@thirdweb-dev/react"
 import { ADDRESS } from "~/config/address"
-import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk'
+import { NATIVE_TOKEN_ADDRESS, NFT } from '@thirdweb-dev/sdk'
 
-export default function NFTList() {
-  const { contract } = useContract(ADDRESS.NFT_COLLECTION, 'nft-collection')
-  const { data } = useOwnedNFTs(contract, useAddress())
-  console.log(data)
-
+export default function NFTList({ nftList }: { nftList: NFT[] }) {
   const { contract: market_contract } = useContract(ADDRESS.MARKETPLACE, "marketplace")
   const sell = async (tokenId: string) => {
     const listing = {
@@ -32,13 +28,9 @@ export default function NFTList() {
 
   return (
     <div>
-      <ul className="mb-3 flex items-center gap-3 font-bold">
-        <li className="text-xl text-black hover:bg-gray-100">All</li>
-        <li className="text-gray-400">In Sales</li>
-        <li className="text-gray-400">Unsold</li>
-      </ul>
+
       <div className="flex min-h-[500px] flex-wrap gap-5">
-        {data?.map(item => {
+        {nftList?.map(item => {
           return (
             <div className="flex h-60 w-44 flex-col items-center justify-center gap-3 overflow-hidden rounded-md border hover:border-gray-300" key={item.metadata.id}>
               <div className="relative block h-full w-full">
