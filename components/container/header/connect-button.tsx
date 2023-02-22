@@ -6,13 +6,11 @@ import IConCoinbaseWallet from '~/public/images/walletlink-alternative.webp'
 
 import {
   useCoinbaseWallet,
-  useConnectedWallet,
   useMetamask,
   useWalletConnect,
 } from '@thirdweb-dev/react'
 import { IconClose } from '~/components/icons/close'
 import clsx from 'clsx'
-import { useState } from 'react'
 
 const ConnectDialog = ({ children }: { children: React.ReactNode }) => {
   const connectWithMetamask = useMetamask()

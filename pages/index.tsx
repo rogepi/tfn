@@ -1,6 +1,7 @@
 import { useAddress } from '@thirdweb-dev/react'
 import type { NextPage } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import ConnectButton from '~/components/container/header/connect-button'
 import HomeDemoPng from '~/public/images/homedemo.png'
 
@@ -19,13 +20,17 @@ const Home: NextPage = () => {
             tokens(NFTS). Buy,sell and discover exclusive digital assets.
           </div>
           <div className="flex gap-5">
-            <button className="flex items-center rounded-full bg-blue-500 p-5 px-8 text-lg font-semibold text-white hover:bg-blue-400">
-              Explore
-            </button>
-            {address ? (
-              <button className="rounded-full border p-2 px-8 text-lg font-semibold hover:bg-gray-200 dark:border-gray-500 dark:hover:bg-gray-900">
-                Profile
+            <Link href="/discover">
+              <button className="flex h-full items-center rounded-full bg-blue-500 p-4 px-8 text-lg font-semibold text-white hover:bg-blue-400">
+                Explore
               </button>
+            </Link>
+            {address ? (
+              <Link href="/profile">
+                <button className="flex h-full items-center rounded-full border p-4 px-8 text-lg font-semibold hover:bg-gray-200 dark:border-gray-500 dark:hover:bg-gray-900">
+                  Profile
+                </button>
+              </Link>
             ) : (
               <ConnectButton className="px-8 text-lg" />
             )}

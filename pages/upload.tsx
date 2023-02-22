@@ -2,18 +2,16 @@ import { NextPage } from 'next'
 import { DocumentArrowUpIcon, PlusIcon } from '@heroicons/react/24/solid'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm } from 'react-hook-form'
-import { useContract, useMintNFT } from '@thirdweb-dev/react'
+import { useAddress, useContract, useMintNFT, useStorage } from '@thirdweb-dev/react'
 import { useRef, useState } from 'react'
 import useFile from '~/hooks/use-file'
 import { ADDRESS } from '~/config/address'
 
 type Metadata = {
   name: string
-  media: string
   description: string
-  properties: {
-    [key: string]: string
-  }
+  image: File
+  properties: { name: string, value: string }[]
 }
 
 const Upload: NextPage = () => {
@@ -21,10 +19,13 @@ const Upload: NextPage = () => {
   const ref = useRef<HTMLInputElement>(null)
 
   const { contract } = useContract(ADDRESS.NFT_COLLECTION, "nft-collection")
-  const { mutate: mintNFT, isLoading, error } = useMintNFT(contract)
+  const { mutateAsync: mintNFT, isLoading, error } = useMintNFT(contract)
 
-  const onSubmit = (data: Metadata) => {
-    data.media = file as string
+  const address = useAddress() as string
+  const onSubmit = async (data: Metadata) => {
+    if (ref.current?.files)
+      data.image = ref.current.files[0]
+    mintNFT({ metadata: data, to: address })
     console.log(data)
   }
 
@@ -58,7 +59,7 @@ const Upload: NextPage = () => {
             <br />
             <div className="flex items-center gap-3">
               <div
-                className="flex h-28 w-28 cursor-pointer flex-col items-center justify-center
+                className="flex h-52 w-52 cursor-pointer flex-col items-center justify-center
                           rounded border bg-gray-50 text-xs text-gray-400 hover:border-blue-500"
               >
                 {file ? (
@@ -82,7 +83,8 @@ const Upload: NextPage = () => {
                 </button>
               ) : (
                 <button
-                  onClick={() => handleChooseFile()}
+                  // onClick={() => handleChooseFile()}
+                  onClick={() => { ref.current?.click() }}
                   type="button"
                   className="h-8 rounded border-2 border-green-500 p-1 px-2 text-green-500 hover:bg-green-50"
                 >
@@ -110,7 +112,7 @@ const Upload: NextPage = () => {
             <br />
             <div className="flex items-center gap-3">
               <input
-                {...register('properties')}
+                // {...register('properties')}
                 className=" w-1/2 max-w-[10rem] rounded bg-gray-50 p-1 outline outline-0 focus:outline-1 focus:outline-blue-500"
               />
               <input className="w-1/2 max-w-[10rem] rounded bg-gray-50 p-1 outline outline-0 focus:outline-1 focus:outline-blue-500" />
@@ -126,10 +128,11 @@ const Upload: NextPage = () => {
 
           <div className="mt-6 space-x-5">
             <button
+              disabled={isLoading}
               type="submit"
               className="rounded bg-blue-500 p-2 px-4 text-white hover:bg-blue-400"
             >
-              Submit
+              Submit{isLoading ? "..." : ''}
             </button>
             <button
               onClick={() => reset()}
@@ -143,7 +146,8 @@ const Upload: NextPage = () => {
 
       <input
         type="file"
-        ref={fileInputRef}
+        // ref={fileInputRef}
+        ref={ref}
         onChange={handleChange}
         // {...register('media')}
         hidden

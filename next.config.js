@@ -2,6 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   basePath: '',
+  images:{
+    remotePatterns:[
+      {
+        protocol:'https',
+        hostname:'gateway.ipfscdn.io'
+      }
+    ]
+  }
 }
 
 module.exports = nextConfig

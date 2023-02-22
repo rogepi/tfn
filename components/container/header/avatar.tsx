@@ -2,6 +2,7 @@ import * as RadixAvatar from '@radix-ui/react-avatar'
 import * as RadixPopover from '@radix-ui/react-popover'
 import { useDisconnect } from '@thirdweb-dev/react'
 import { Jazzicon } from '@ukstv/jazzicon-react'
+import Link from 'next/link'
 
 const AvatarImage = ({ address }: { address: string }) => {
   return (
@@ -40,7 +41,7 @@ const Avatar = ({ address }: { address: string }) => {
         font-semibold shadow dark:divide-gray-500 dark:border-gray-500 dark:shadow-gray-800"
         >
           <AvatarPopoverItem>
-            <p className="truncate">Profile</p>
+            <Link href="/profile">Profile</Link>
           </AvatarPopoverItem>
           <AvatarPopoverItem>
             <button onClick={disconnect}>Log out</button>
