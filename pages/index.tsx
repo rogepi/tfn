@@ -1,5 +1,5 @@
 import { useAddress } from '@thirdweb-dev/react'
-import { GetStaticProps, InferGetStaticPropsType } from 'next'
+import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import ConnectButton from '~/components/container/header/connect-button'
@@ -8,7 +8,7 @@ import { getListings } from '~/helper/sdk'
 import { INFT } from '~/helper/types'
 import HomeDemoPng from '~/public/images/homedemo.png'
 
-export const getStaticProps: GetStaticProps<{ listing: INFT[] }> = async (context) => {
+export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async (context) => {
   const listing = await getListings({ count: 6 })
   return {
     props: {
@@ -17,7 +17,7 @@ export const getStaticProps: GetStaticProps<{ listing: INFT[] }> = async (contex
   }
 }
 
-function Home({ listing }: InferGetStaticPropsType<typeof getStaticProps>) {
+function Home({ listing }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const address = useAddress()
   return (
     <>
