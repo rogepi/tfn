@@ -1,11 +1,23 @@
 import { useAddress } from '@thirdweb-dev/react'
-import type { NextPage } from 'next'
+import { GetStaticProps, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import ConnectButton from '~/components/container/header/connect-button'
+import NewNFTs from '~/components/page-ui/new-nfts'
+import { getListings } from '~/helper/sdk'
+import { INFT } from '~/helper/types'
 import HomeDemoPng from '~/public/images/homedemo.png'
 
-const Home: NextPage = () => {
+export const getStaticProps: GetStaticProps<{ listing: INFT[] }> = async (context) => {
+  const listing = await getListings({ count: 6 })
+  return {
+    props: {
+      listing
+    }
+  }
+}
+
+function Home({ listing }: InferGetStaticPropsType<typeof getStaticProps>) {
   const address = useAddress()
   return (
     <>
@@ -43,8 +55,12 @@ const Home: NextPage = () => {
         </div>
       </section>
       <section>
-        <div className="text-3xl">Hot bid</div>
-        <div></div>
+        <NewNFTs listing={listing} />
+        <div className='flex justify-center'>
+          <Link href="/discover">
+            <button className='flex h-full items-center rounded-full bg-blue-500 p-2 px-4 text-lg font-semibold text-white hover:bg-blue-400'>View More</button>
+          </Link>
+        </div>
       </section>
     </>
   )

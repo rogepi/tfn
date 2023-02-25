@@ -5,7 +5,7 @@ import * as RadixDialog from '@radix-ui/react-dialog'
 import { ADDRESS } from "~/config/address"
 import { NATIVE_TOKEN_ADDRESS, NFT } from '@thirdweb-dev/sdk'
 import { ProfileNFT } from "~/hooks/use-nfts"
-import { IconClose } from "./icons/close"
+import { IconClose } from "../icons/close"
 import { useRef, useState } from "react"
 import { useRouter } from "next/router"
 
@@ -17,7 +17,7 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
       <div className="flex min-h-[500px] flex-wrap gap-5">
         {nftList?.map(item => {
           return (
-            <div className="flex h-60 w-44 flex-col items-center justify-center gap-3 overflow-hidden rounded-md border hover:border-gray-300" key={item.id}>
+            <div className="flex h-60 w-44 flex-col items-center justify-center gap-3 overflow-hidden rounded-md border shadow-md hover:border-gray-300" key={item.id}>
               <div className="relative block h-full w-full">
                 <Image src={item.image} alt={item.name} fill sizes="100" />
               </div>

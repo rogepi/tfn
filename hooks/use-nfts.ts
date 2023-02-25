@@ -1,5 +1,4 @@
 import { useActiveListings, useAddress, useContract, useOwnedNFTs } from '@thirdweb-dev/react'
-import { useState } from 'react'
 import { ADDRESS } from '~/config/address'
 
 export interface ProfileNFT {
