@@ -6,6 +6,7 @@ import { useAddress, useContract, useMintNFT, useStorage } from '@thirdweb-dev/r
 import { useRef, useState } from 'react'
 import useFile from '~/hooks/use-file'
 import { ADDRESS } from '~/config/address'
+import UploadForm from '~/components/page-ui/upload-form'
 
 type Metadata = {
   name: string
@@ -13,6 +14,8 @@ type Metadata = {
   image: File
   properties: { name: string, value: string }[]
 }
+
+
 
 const Upload: NextPage = () => {
   const { register, handleSubmit, watch, reset } = useForm<Metadata>()
@@ -26,11 +29,40 @@ const Upload: NextPage = () => {
     if (ref.current?.files)
       data.image = ref.current.files[0]
     mintNFT({ metadata: data, to: address })
-    console.log(data)
   }
 
   const { file, setFile, fileInputRef, handleChooseFile, handleChange } =
     useFile()
+
+  const [properties, setProperties] = useState([{ id: 1, name: '', value: '' }])
+  const handleChangePropName = (e: React.ChangeEvent<HTMLInputElement>, inputId: number) => {
+    const temp = properties.map(item => {
+      if (item.id === inputId) {
+        return {
+          ...item,
+          name: e.target?.value
+        }
+      }
+      return item
+    })
+    setProperties(temp)
+  }
+  const handleChangePropValue = (e: React.ChangeEvent<HTMLInputElement>, inputId: number) => {
+    const temp = properties.map(item => {
+      if (item.id === inputId) {
+        return {
+          ...item,
+          value: e.target?.value
+        }
+      }
+      return item
+    })
+    setProperties(temp)
+  }
+  const handleAddProp = () => {
+    const tmp = { id: ++properties.length, name: '', value: '' }
+    setProperties([...properties, tmp])
+  }
 
   return (
     <>
@@ -39,6 +71,9 @@ const Upload: NextPage = () => {
         <div className="text-xl text-gray-600">
           Share your awasome digital artwork
         </div>
+      </section>
+      <section className="rounded-md bg-gray-100 p-5 text-xl">
+        <UploadForm />
       </section>
       <section className="rounded-md bg-gray-100 p-5 text-xl">
         <h3>Metadata</h3>
@@ -110,17 +145,27 @@ const Upload: NextPage = () => {
           <label className="text-sm">
             Properties
             <br />
-            <div className="flex items-center gap-3">
-              <input
-                // {...register('properties')}
-                className=" w-1/2 max-w-[10rem] rounded bg-gray-50 p-1 outline outline-0 focus:outline-1 focus:outline-blue-500"
-              />
-              <input className="w-1/2 max-w-[10rem] rounded bg-gray-50 p-1 outline outline-0 focus:outline-1 focus:outline-blue-500" />
-              <button className="rounded hover:bg-red-200">
-                <XMarkIcon className="w-5 text-red-500 " />
-              </button>
-            </div>
-            <button className="mt-3 flex items-center rounded bg-green-400 p-1 px-2 text-white hover:bg-green-500">
+            {/* {
+              properties.map(item =>
+                <div key={item.id} className="flex items-center gap-3">
+                  <input
+                    value={item.name}
+                    onChange={(e) => handleChangePropName(e, item.id)}
+                    className=" w-1/2 max-w-[10rem] rounded bg-gray-50
+                     p-1 outline outline-0 focus:outline-1 focus:outline-blue-500"
+                  />
+                  <input value={item.value}
+                    onChange={(e) => handleChangePropValue(e, item.id)}
+                    className="w-1/2 max-w-[10rem] rounded bg-gray-50
+                  p-1 outline outline-0 focus:outline-1 focus:outline-blue-500" />
+                  <button className="rounded hover:bg-red-200">
+                    <XMarkIcon className="w-5 text-red-500 " />
+                  </button>
+                </div>
+              )
+            } */}
+
+            <button onClick={handleAddProp} className="mt-3 flex items-center rounded bg-green-400 p-1 px-2 text-white hover:bg-green-500">
               <PlusIcon className="w-4" />
               Add Row
             </button>
