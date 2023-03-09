@@ -33,6 +33,7 @@
     "tailwind-merge": "^1.9.1"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
     "@types/node": "^18.11.11",
     "@types/react": "^18",
     "autoprefixer": "^10.4.13",
