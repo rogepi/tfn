@@ -54,7 +54,6 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
 }
 
 const SellDialog = ({ children, tokenId }: { children: React.ReactNode, tokenId: string }) => {
-  const router = useRouter()
   const ref = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { contract: market_contract } = useContract(ADDRESS.MARKETPLACE, "marketplace")

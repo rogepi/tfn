@@ -3,6 +3,10 @@ import { useForm } from "react-hook-form"
 import { IMetadata } from "~/helper/types"
 import { useRef, useState } from "react"
 import Image from "next/image"
+import { useContract, useContractWrite } from "@thirdweb-dev/react"
+import { ADDRESS } from "~/config/address"
+import FormDialog, { DialogState } from "./form-dialog"
+
 
 const UploadForm = () => {
 
@@ -31,8 +35,12 @@ const UploadForm = () => {
     }
   }
 
-  // form
-  const onSubmit = handleSubmit(data => {
+  // form & mint
+  const [formState, setFormState] = useState<DialogState>('null')
+  const { contract } = useContract(ADDRESS.NFT_COLLECTION)
+  const { mutateAsync: mintTo, isLoading, error } = useContractWrite(contract, 'mintTo')
+  const onSubmit = handleSubmit(async (data) => {
+    setFormState('check')
     console.log(data)
   })
   const onReset = () => {
@@ -114,7 +122,9 @@ const UploadForm = () => {
           <button onClick={addInput} className="mt-3 flex items-center rounded bg-green-400 p-1 text-sm text-white shadow-sm hover:bg-green-500">Add row</button>
         </div>
         <div className="space-x-5">
-          <button type="submit" className="rounded bg-blue-500 p-2 px-6 text-white shadow-sm hover:bg-blue-400">Submit</button>
+          <FormDialog state={formState}>
+            <button type="submit" className="rounded bg-blue-500 p-2 px-6 text-white shadow-sm hover:bg-blue-400">Submit</button>
+          </FormDialog>
           <button type="reset" onClick={onReset} className="rounded bg-gray-200 p-2 px-4 shadow-sm hover:bg-gray-300">reset</button>
         </div>
 
