@@ -7,6 +7,7 @@ export interface INFT {
 }
 
 export interface IMetadata {
+  [x: string]: unknown
   name: string
   description: string
   image: FileList

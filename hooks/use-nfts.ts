@@ -5,6 +5,12 @@ export interface ProfileNFT {
   id: string
   name: string
   image: string
+  desc: string
+  props?: {
+    [x: string]: unknown;
+  } | {
+    [x: string]: unknown;
+  }[] | undefined
   isSales: boolean
   price?: string
   listingId?: string
@@ -22,6 +28,8 @@ export function useNFTs() {
       id: item.metadata.id,
       name: item.metadata.name as string,
       image: item.metadata.image as string,
+      desc: item.metadata.description as string,
+      props: item.metadata.properties,
       isSales: false
     }
     salesdata?.map(item_ => {
@@ -32,7 +40,7 @@ export function useNFTs() {
       }
     })
     return nft
-  })
+  }).reverse()
 
   const isLoading = nftisloading || salesisLoading
 

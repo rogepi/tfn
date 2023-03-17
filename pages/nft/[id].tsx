@@ -1,31 +1,45 @@
 import { CurrencyDollarIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
-import { useContract, useNetwork, useNetworkMismatch } from '@thirdweb-dev/react'
+import { useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
+import { NFT } from '@thirdweb-dev/sdk'
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { ADDRESS } from '~/config/address'
-import { INFTDetail, getListing, getListings, sdk } from '~/helper/sdk'
+import { getListing, getListings, sdk, getNFTs, getNFT } from '~/helper/sdk'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const listings = await getListings({})
-  const paths = listings.map(item => ({ params: { id: item.id } }))
+  const list = await getNFTs()
+  const paths = list.map(item => ({ params: { id: item.metadata.id } }))
   return {
     paths, fallback: false
   }
 }
 
-export const getStaticProps: GetStaticProps<{ listing: INFTDetail }> = async (context) => {
+interface INFTwithPrice {
+  nft: NFT
+  price?: string
+}
+
+export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = async (context) => {
   const id = context.params?.id
-  const listing = await getListing(id as string)
+  const nft = await getNFT(id as string)
+  const listings = await getListings()
+  const isSales = listings.find(item => item.tokenId === nft.metadata.id)
+  let _nft: INFTwithPrice = {} as INFTwithPrice
+  if (isSales) {
+    _nft.price = isSales.buyoutCurrencyValuePerToken.displayValue
+  }
+  _nft.nft = nft
   return {
     props: {
-      listing
+      // listing
+      nftWithPrice: _nft
     }
   }
 }
 
-const NFTDetail = ({ listing }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [isLoading, setIsLoading] = useState(false)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
 
@@ -46,16 +60,16 @@ const NFTDetail = ({ listing }: InferGetStaticPropsType<typeof getStaticProps>) 
     <div className='flex gap-16'>
       <div className='h-[30vw] w-[30vw] border p-3'>
         <div className="relative block h-full w-full">
-          <Image src={listing.image as string} alt={listing.name as string} fill sizes="100" />
+          <Image src={nftWithPrice.nft.metadata.image as string} alt={nftWithPrice.nft.metadata.name as string} fill sizes="100" />
         </div>
       </div>
       <div>
         <div className='text-4xl font-bold'>
-          {listing.name} #{listing.tokenId}
+          {nftWithPrice.nft.metadata.name} #{nftWithPrice.nft.metadata.id}
         </div>
         <div className='my-3 text-xs'>Owned by
           <Link className='ml-1 text-blue-600' href={''}>
-            {listing.author}
+            {nftWithPrice.nft.owner}
           </Link>
         </div>
         <div className='flex gap-3'>
@@ -77,12 +91,12 @@ const NFTDetail = ({ listing }: InferGetStaticPropsType<typeof getStaticProps>) 
             Current price
           </div>
           <div className=' text-5xl font-bold'>
-            {listing.price}ETH
+            {nftWithPrice.price}ETH
           </div>
         </div>
 
         <div className='mt-10 flex gap-10'>
-          <button onClick={() => buy(listing.id)} disabled={isLoading} className='flex h-16 w-40 items-center
+          <button onClick={() => buy(nftWithPrice.nft.metadata.id)} disabled={isLoading} className='flex h-16 w-40 items-center
            justify-center rounded-md bg-blue-500 text-xl font-semibold text-white hover:bg-blue-400'>
             {isLoading ? 'Processing...' : 'Buy'}</button>
           <button className='flex h-16 w-32 items-center justify-center

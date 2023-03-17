@@ -3,9 +3,12 @@ import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import NFTList from '~/components/page-ui/nft-list'
 import { useNFTs } from '~/hooks/use-nfts'
+import { useAddress } from '@thirdweb-dev/react'
+import { toast } from 'react-hot-toast'
 
 const Profile: NextPage = () => {
   const [active, setActive] = useState('all')
+
   const { nft_list, isLoading } = useNFTs()
 
   const showList = useMemo(() => {
@@ -36,8 +39,8 @@ const Profile: NextPage = () => {
           {
             ['all', 'in Sales', 'unsold'].map(item =>
               <li key={item} className={clsx(
-                'cursor-pointer list-none rounded p-1 px-2 capitalize hover:bg-gray-100',
-                item === active ? 'text-xl text-black' : 'text-lg text-gray-400'
+                'cursor-pointer list-none rounded p-1 px-2 capitalize hover:bg-gray-100  dark:hover:bg-slate-700',
+                item === active ? 'text-xl text-black dark:text-white' : 'text-lg text-gray-400 '
               )} onClick={() => activeToggle(item)}
               >{item}</li>
             )

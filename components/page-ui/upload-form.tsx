@@ -1,15 +1,14 @@
-import { DocumentArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid"
-import { useForm } from "react-hook-form"
-import { IMetadata } from "~/helper/types"
 import { useRef, useState } from "react"
 import Image from "next/image"
-import { useContract, useContractWrite } from "@thirdweb-dev/react"
+import { useAddress, useContract, useMintNFT } from "@thirdweb-dev/react"
+import { useForm } from "react-hook-form"
+import { DocumentArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid"
+import { IMetadata } from "~/helper/types"
 import { ADDRESS } from "~/config/address"
-import FormDialog, { DialogState } from "./form-dialog"
+import { toast, Toaster } from "react-hot-toast"
 
 
 const UploadForm = () => {
-
   const { register, handleSubmit, watch, setValue, reset, formState: { errors }, } = useForm<IMetadata>({
     defaultValues: {
       name: '',
@@ -36,12 +35,31 @@ const UploadForm = () => {
   }
 
   // form & mint
-  const [formState, setFormState] = useState<DialogState>('null')
   const { contract } = useContract(ADDRESS.NFT_COLLECTION)
-  const { mutateAsync: mintTo, isLoading, error } = useContractWrite(contract, 'mintTo')
+  const address = useAddress()
+  const { mutateAsync: mintNFT, isLoading, } = useMintNFT(contract)
   const onSubmit = handleSubmit(async (data) => {
-    setFormState('check')
+    // setFormState('check')
     console.log(data)
+    if (!(data.description && data.image && data.name)) {
+      toast.error('Please enter complete')
+    } else {
+      if (!address) {
+        toast.error('No wallet connection')
+      } else {
+        toast.promise(
+          mintNFT({
+            metadata: { ...data, image: data.image[0] },
+            to: address
+          }),
+          {
+            loading: 'Uploading...',
+            success: 'Upload successfull!',
+            error: 'Somthing Error'
+          }
+        )
+      }
+    }
   })
   const onReset = () => {
     reset()
@@ -119,17 +137,13 @@ const UploadForm = () => {
               )
             }
           </div>
-          <button onClick={addInput} className="mt-3 flex items-center rounded bg-green-400 p-1 text-sm text-white shadow-sm hover:bg-green-500">Add row</button>
+          <button type="button" onClick={addInput} className="mt-3 flex items-center rounded bg-green-500 p-1 text-sm text-white shadow-sm hover:bg-green-400">Add row</button>
         </div>
         <div className="space-x-5">
-          <FormDialog state={formState}>
-            <button type="submit" className="rounded bg-blue-500 p-2 px-6 text-white shadow-sm hover:bg-blue-400">Submit</button>
-          </FormDialog>
+          <button disabled={isLoading} type="submit" className="rounded bg-blue-500 p-2 px-6 text-white shadow-sm hover:bg-blue-400">Submit</button>
           <button type="reset" onClick={onReset} className="rounded bg-gray-200 p-2 px-4 shadow-sm hover:bg-gray-300">reset</button>
         </div>
-
       </form>
-
     </div>
   )
 }

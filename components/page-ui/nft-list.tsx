@@ -7,7 +7,8 @@ import { NATIVE_TOKEN_ADDRESS, NFT } from '@thirdweb-dev/sdk'
 import { ProfileNFT } from "~/hooks/use-nfts"
 import { IconClose } from "../icons/close"
 import { useRef, useState } from "react"
-import { useRouter } from "next/router"
+import NFTDetailDialog from "./nft-detail-dialog"
+import Link from "next/link"
 
 export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
   const [tokenId, setTokenId] = useState<string>()
@@ -17,7 +18,9 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
       <div className="flex min-h-[500px] flex-wrap gap-5">
         {nftList?.map(item => {
           return (
-            <div className="flex h-60 w-44 flex-col items-center justify-center gap-3 overflow-hidden rounded-md border shadow-md hover:border-gray-300" key={item.id}>
+            <Link href={`/nft/${item.id}`}
+              className="flex h-60 w-44 cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-md
+            border-2 shadow-md  hover:border-gray-300 dark:border-slate-500" key={item.id}>
               <div className="relative block h-full w-full">
                 <Image src={item.image} alt={item.name} fill sizes="100" />
               </div>
@@ -29,7 +32,7 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
                   item.isSales ?
                     <>
                       <button disabled
-                        className="flex-1 border-r bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">
+                        className="flex-1 border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white hover:bg-blue-400 dark:border-slate-500">
                         {item.price + ' ETH'}</button>
                       <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
 
@@ -38,18 +41,18 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
                       <SellDialog tokenId={tokenId as string}>
                         <button
                           onClick={() => setTokenId(item.id)}
-                          className="flex-1 border-r bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">
+                          className="flex-1 border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white hover:bg-blue-400 dark:border-slate-500">
                           Sell</button>
                       </SellDialog>
                       <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
                     </>
                 }
               </div>
-            </div>
+            </Link>
           )
         })}
       </div>
-    </div>
+    </div >
   )
 }
 

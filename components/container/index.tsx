@@ -21,9 +21,9 @@ const Container = ({ children }: IContainerProps) => {
   return (
     <>
       <Head />
-      <div style={inter.style} className="h-screen dark:bg-slate-900">
+      <div style={inter.style} className="h-full dark:bg-slate-900">
         <Header />
-        <main className="container mx-auto px-10">{children}</main>
+        <main className="container mx-auto mb-5 px-10">{children}</main>
         <Footer />
       </div>
       {isMismatched ? <NetworkError /> : null}

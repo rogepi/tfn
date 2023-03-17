@@ -1,4 +1,4 @@
-import { ThirdwebSDK } from "@thirdweb-dev/sdk"
+import { NFT, ThirdwebSDK } from "@thirdweb-dev/sdk"
 import { ADDRESS } from "~/config/address"
 import { INFT } from "./types"
 
@@ -10,7 +10,12 @@ interface getListingsParams {
   count?: number
 }
 
-export const getListings = async ({ author, count }: getListingsParams) => {
+export const getListings = async () => {
+  const contract = await sdk.getContract(ADDRESS.MARKETPLACE, 'marketplace')
+  return await contract.getAllListings()
+}
+
+export const getListingsByAuthor = async ({ author, count }: getListingsParams) => {
   const market_contract = await sdk.getContract(ADDRESS.MARKETPLACE, "marketplace")
   const listings = await market_contract.getActiveListings({ seller: author, count })
   const data: INFT[] = listings.map(item => {
@@ -41,3 +46,14 @@ export const getListing = async (id: string): Promise<INFTDetail> => {
     author: listing.sellerAddress
   }
 }
+
+export const getNFT = async (id: string): Promise<NFT> => {
+  const contract = await sdk.getContract(ADDRESS.NFT_COLLECTION, 'nft-collection')
+  return await contract.erc721.get(id)
+}
+
+export const getNFTs = async () => {
+  const contract = await sdk.getContract(ADDRESS.NFT_COLLECTION, 'nft-collection')
+  return await contract.erc721.getAll()
+}
+
