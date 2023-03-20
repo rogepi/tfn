@@ -4,7 +4,6 @@ import { INFT } from "./types"
 
 export const sdk = new ThirdwebSDK('goerli')
 
-
 interface getListingsParams {
   author?: string,
   count?: number
@@ -13,6 +12,11 @@ interface getListingsParams {
 export const getListings = async ({ author, count }: getListingsParams) => {
   const contract = await sdk.getContract(ADDRESS.MARKETPLACE, 'marketplace')
   return await contract.getActiveListings({ count })
+}
+
+export const cancelListing = async ({ listingId }: { listingId: number }) => {
+  const contract = await sdk.getContract(ADDRESS.MARKETPLACE, 'marketplace')
+  await contract.auction.cancelListing(listingId)
 }
 
 export const getListingsByAuthor = async ({ author, count }: getListingsParams) => {

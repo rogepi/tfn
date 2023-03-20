@@ -20,8 +20,8 @@ const NFTDropDownMenu = ({ children, menu }: INFTDropDownMenu) => {
         {children}
       </RadixDropDownMenu.Trigger>
 
-      <RadixDropDownMenu.Portal>
-        <RadixDropDownMenu.Content>
+      <RadixDropDownMenu.Portal >
+        <RadixDropDownMenu.Content className='bg-blue-500'>
           {
             menu.map((item, index) => (
               <RadixDropDownMenu.Item onClick={item.onClick} key={index}>

@@ -41,7 +41,9 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
                       <button disabled
                         className="flex-1 border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white hover:bg-blue-400 dark:border-slate-500">
                         {item.price + ' ETH'}</button>
-                      <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
+                      <NFTDropDownMenu menu={menuInSales}>
+                        <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
+                      </NFTDropDownMenu>
 
                     </> :
                     <>
