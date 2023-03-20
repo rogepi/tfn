@@ -7,11 +7,18 @@ import { NATIVE_TOKEN_ADDRESS, NFT } from '@thirdweb-dev/sdk'
 import { ProfileNFT } from "~/hooks/use-nfts"
 import { IconClose } from "../icons/close"
 import { useRef, useState } from "react"
-import NFTDetailDialog from "./nft-detail-dialog"
 import Link from "next/link"
+import NFTDropDownMenu, { INFTDropDownMenuItem } from "./nft-dropdown-menu"
 
 export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
   const [tokenId, setTokenId] = useState<string>()
+
+  const menu: INFTDropDownMenuItem[] = [
+    { label: 'Cancel Listing', onClick: () => { } }
+  ]
+  const menuInSales: INFTDropDownMenuItem[] = [
+    { label: 'Cancel Listing', onClick: () => { } }
+  ]
 
   return (
     <div>
@@ -44,7 +51,9 @@ export default function NFTList({ nftList }: { nftList: ProfileNFT[] }) {
                           className="flex-1 border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white hover:bg-blue-400 dark:border-slate-500">
                           Sell</button>
                       </SellDialog>
-                      <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
+                      <NFTDropDownMenu menu={menu}>
+                        <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
+                      </NFTDropDownMenu>
                     </>
                 }
               </div>

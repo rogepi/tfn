@@ -1,10 +1,10 @@
 import { CurrencyDollarIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
-import { useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
+import { useAddress, useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
 import { NFT } from '@thirdweb-dev/sdk'
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ADDRESS } from '~/config/address'
 import { getListing, getListings, sdk, getNFTs, getNFT } from '~/helper/sdk'
 
@@ -25,7 +25,7 @@ export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = a
   const id = context.params?.id
   const nft = await getNFT(id as string)
   const listings = await getListings({})
-  const isSales = listings.find(item => item.tokenId === nft.metadata.id)
+  const isSales = listings.find(item => item.asset.id === nft.metadata.id)
   let _nft: INFTwithPrice = {} as INFTwithPrice
   if (isSales) {
     _nft.price = isSales.buyoutCurrencyValuePerToken.displayValue
@@ -42,6 +42,10 @@ export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = a
 const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [isLoading, setIsLoading] = useState(false)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
+
+  const address = useAddress()
+
+  const isMe = useMemo(() => address === nftWithPrice.nft.owner, [address, nftWithPrice.nft.owner])
 
   const networkMismatch = useNetworkMismatch()
   const [, switchNetwork] = useNetwork()
@@ -65,11 +69,14 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
       </div>
       <div>
         <div className='text-4xl font-bold'>
-          {nftWithPrice.nft.metadata.name} #{nftWithPrice.nft.metadata.id}
+          {nftWithPrice.nft.metadata.name}
+        </div>
+        <div className='mt-1 text-sm text-gray-600'>
+          tokenId  #{nftWithPrice.nft.metadata.id}
         </div>
         <div className='my-3 text-xs'>Owned by
           <Link className='ml-1 text-blue-600' href={''}>
-            {nftWithPrice.nft.owner}
+            {isMe ? 'me' : nftWithPrice.nft.owner}
           </Link>
         </div>
         <div className='flex gap-3'>
@@ -96,9 +103,12 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
         </div>
 
         <div className='mt-10 flex gap-10'>
-          <button onClick={() => buy(nftWithPrice.nft.metadata.id)} disabled={isLoading} className='flex h-16 w-40 items-center
-           justify-center rounded-md bg-blue-500 text-xl font-semibold text-white hover:bg-blue-400'>
-            {isLoading ? 'Processing...' : 'Buy'}</button>
+          {
+            !isMe &&
+            <button onClick={() => buy(nftWithPrice.nft.metadata.id)} disabled={isLoading} className='flex h-16 w-40 items-center
+            justify-center rounded-md bg-blue-500 text-xl font-semibold text-white hover:bg-blue-400'>
+              {isLoading ? 'Processing...' : 'Buy'}</button>
+          }
           <button className='flex h-16 w-32 items-center justify-center
             rounded-md bg-rose-500 text-xl font-semibold text-white hover:bg-rose-400'>
             <HeartIcon className='w-8' /></button>
