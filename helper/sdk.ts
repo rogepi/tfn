@@ -10,9 +10,9 @@ interface getListingsParams {
   count?: number
 }
 
-export const getListings = async () => {
+export const getListings = async ({ author, count }: getListingsParams) => {
   const contract = await sdk.getContract(ADDRESS.MARKETPLACE, 'marketplace')
-  return await contract.getAllListings()
+  return await contract.getActiveListings({ count })
 }
 
 export const getListingsByAuthor = async ({ author, count }: getListingsParams) => {

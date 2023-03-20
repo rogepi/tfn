@@ -24,7 +24,7 @@ interface INFTwithPrice {
 export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = async (context) => {
   const id = context.params?.id
   const nft = await getNFT(id as string)
-  const listings = await getListings()
+  const listings = await getListings({})
   const isSales = listings.find(item => item.tokenId === nft.metadata.id)
   let _nft: INFTwithPrice = {} as INFTwithPrice
   if (isSales) {

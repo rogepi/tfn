@@ -1,4 +1,5 @@
 import { useAddress } from '@thirdweb-dev/react'
+import { AuctionListing, DirectListing, Token } from '@thirdweb-dev/sdk'
 import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,9 +11,18 @@ import HomeDemoPng from '~/public/images/homedemo.png'
 
 export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async (context) => {
   const listing = await getListings({ count: 6 })
+  const _listing: INFT[] = listing.map(item => {
+    return {
+      id: item.id,
+      tokenId: item.asset.id,
+      image: item.asset.image,
+      name: item.asset.name,
+      price: item.buyoutPrice.toString()
+    }
+  })
   return {
     props: {
-      listing
+      listing: _listing
     }
   }
 }
