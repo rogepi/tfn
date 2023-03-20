@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async
       tokenId: item.asset.id,
       image: item.asset.image,
       name: item.asset.name,
-      price: item.buyoutPrice.toString()
+      price: item.buyoutCurrencyValuePerToken.displayValue
     }
   })
   return {
