@@ -3,12 +3,12 @@ import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import NFTList from '~/components/page-ui/nft-list'
 import { useNFTs } from '~/hooks/use-nfts'
-import { useAddress } from '@thirdweb-dev/react'
-import { toast } from 'react-hot-toast'
+import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
+import ConnectButton from '~/components/container/header/connect-button'
 
 const Profile: NextPage = () => {
   const [active, setActive] = useState('all')
-
+  const address = useAddress()
   const { nft_list, isLoading } = useNFTs()
 
   const showList = useMemo(() => {
@@ -46,11 +46,20 @@ const Profile: NextPage = () => {
             )
           }
         </div>
-        {(isLoading || showList === undefined) ?
-          <div className='min-h-[300px] pt-[10vh] text-center'>
-            loading...</div>
-          :
-          <NFTList nftList={showList} />
+
+        {
+          address ?
+            (
+              (isLoading || showList === undefined) ?
+                <div className='min-h-[300px] pt-[10vh] text-center'>
+                  loading...</div>
+                :
+                <NFTList nftList={showList} />)
+            :
+            <div className='h-80 pt-20 text-center text-xl'>
+
+              <ConnectButton />
+            </div>
         }
       </div>
     </>

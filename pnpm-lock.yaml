@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@headlessui/react': ^1.7.13
   '@heroicons/react': ^2.0.15
   '@next/font': ^13.1.6
   '@radix-ui/react-avatar': ^1.0.1
@@ -34,6 +35,7 @@ specifiers:
   typescript: ^4.9.4
 
 dependencies:
+  '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
   '@heroicons/react': 2.0.15_react@18.2.0
   '@next/font': 13.1.6
   '@radix-ui/react-avatar': 1.0.1_biqbaboplfbrettd7655fr4n2y
@@ -731,6 +733,18 @@ packages:
     dependencies:
       lit: 2.6.1
       three: 0.146.0
+    dev: false
+
+  /@headlessui/react/1.7.13_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@heroicons/react/2.0.15_react@18.2.0:

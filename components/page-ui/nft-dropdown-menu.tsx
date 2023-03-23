@@ -3,7 +3,7 @@ import React from 'react'
 
 
 export interface INFTDropDownMenuItem {
-  label: string
+  label: string | JSX.Element
   onClick: () => void
 }
 
@@ -21,11 +21,14 @@ const NFTDropDownMenu = ({ children, menu }: INFTDropDownMenu) => {
       </RadixDropDownMenu.Trigger>
 
       <RadixDropDownMenu.Portal >
-        <RadixDropDownMenu.Content className='bg-blue-500'>
+        <RadixDropDownMenu.Content className='absolute -right-3 top-1 w-32 divide-y overflow-hidden
+         rounded-md border bg-white  font-semibold shadow dark:bg-gray-900'>
           {
             menu.map((item, index) => (
               <RadixDropDownMenu.Item onClick={item.onClick} key={index}>
-                {item.label}
+                <button className="w-full p-1 outline-none hover:bg-blue-500 hover:text-white">
+                  {item.label}
+                </button>
               </RadixDropDownMenu.Item>
             ))
           }

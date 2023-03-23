@@ -44,5 +44,6 @@ export function useNFTs() {
 
   const isLoading = nftisloading || salesisLoading
 
+
   return { nft_list, isLoading }
 }

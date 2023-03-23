@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async
   })
   return {
     props: {
-      listing: _listing
+      listing: _listing.reverse()
     }
   }
 }
