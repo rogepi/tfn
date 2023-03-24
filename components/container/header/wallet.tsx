@@ -2,7 +2,7 @@ import {
   useAddress,
 } from '@thirdweb-dev/react'
 import Avatar from './avatar'
-import ConnectButton from './connect-button'
+import ConnectButton from '~/components/button/connect'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
@@ -18,6 +18,7 @@ const Wallet = () => {
       {address ? (
         <Avatar address={address} />
       ) : (
+
         <ConnectButton className="text-sm" />
       )}
     </div>

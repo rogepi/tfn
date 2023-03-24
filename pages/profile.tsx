@@ -3,8 +3,8 @@ import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import NFTList from '~/components/page-ui/nft-list'
 import { useNFTs } from '~/hooks/use-nfts'
-import { ConnectWallet, useAddress } from '@thirdweb-dev/react'
-import ConnectButton from '~/components/container/header/connect-button'
+import { useAddress } from '@thirdweb-dev/react'
+import ConnectButton from '~/components/button/connect'
 
 const Profile: NextPage = () => {
   const [active, setActive] = useState('all')

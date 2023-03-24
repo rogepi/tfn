@@ -11,6 +11,7 @@ import {
 } from '@thirdweb-dev/react'
 import { IconClose } from '~/components/icons/close'
 import clsx from 'clsx'
+import { useState } from 'react'
 
 const ConnectDialog = ({ children }: { children: React.ReactNode }) => {
   const connectWithMetamask = useMetamask()
@@ -86,6 +87,7 @@ const ConnectWalletButton = ({
 }
 
 const ConnectButton = ({ className }: { className?: string }) => {
+  const [open,setOpen] = useState(false)
   return (
     <ConnectDialog>
       <button
