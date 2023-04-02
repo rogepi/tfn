@@ -51,8 +51,10 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
   const menu: INFTDropDownMenuItem[] = [
     {
       label:
-        <span className="flex items-center gap-2 pl-2">
-          <InformationCircleIcon className="w-5 " />Detail</span>,
+        <Link className="flex items-center gap-2 pl-2" href={`/nft/${item.id}`}>
+          <InformationCircleIcon className="w-5" />Detail
+        </Link>
+      ,
       onClick: () => { router.push(`/nft/${item.id}`) }
     },
     {
@@ -61,7 +63,10 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
     },
   ]
   const menuInSales: INFTDropDownMenuItem[] = [
-    { label: <span className="flex items-center gap-2 pl-2"><InformationCircleIcon className="w-5" />Detail</span>, onClick: () => { } },
+    {
+      label: <span className="flex items-center gap-2 pl-2"><InformationCircleIcon className="w-5" />Detail</span>,
+      onClick: () => { router.push(`/nft/${item.id}`) }
+    },
     {
       label: <span className="flex items-center gap-2 pl-2 "><XMarkIcon className="w-5" />Cancel</span>, onClick: () => {
         setIsCancelOpen(true)
@@ -73,7 +78,7 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
 
   return (
     <div
-      className="flex h-60 w-44 cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-md
+      className="flex h-60 w-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-md
  shadow-md  dark:border dark:border-gray-600" key={item.id}>
       <Link href={`/nft/${item.id}`}>
         <div className="relative block h-40 w-44 overflow-hidden transition ease-in-out hover:scale-110">
@@ -88,11 +93,11 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
           item.isSales ?
             <>
               <button disabled
-                className="flex-1 border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white
+                className="flex-1 rounded-bl-md border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white
                  hover:bg-blue-400 dark:border-slate-500">
                 {item.price + ' ETH'}</button>
               <NFTDropDownMenu menu={menuInSales}>
-                <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
+                <button className="rounded-br-md bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
               </NFTDropDownMenu>
 
             </> :
@@ -100,12 +105,12 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
 
               <button
                 onClick={() => setIsSellOpen(true)}
-                className="flex-1 border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white
+                className="flex-1 rounded-bl-md border-r-2 border-slate-200 bg-blue-500 p-1 px-2 text-white
                    hover:bg-blue-400 dark:border-slate-500">
                 Sell</button>
 
               <NFTDropDownMenu menu={menu}>
-                <button className=" bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
+                <button className="rounded-br-md bg-blue-500 p-1 px-2 text-white hover:bg-blue-400">:</button>
               </NFTDropDownMenu>
             </>
         }

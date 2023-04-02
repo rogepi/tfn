@@ -1,4 +1,5 @@
-import * as RadixDropDownMenu from '@radix-ui/react-dropdown-menu'
+import { Menu, Transition } from '@headlessui/react'
+
 import React from 'react'
 
 
@@ -14,27 +15,26 @@ export interface INFTDropDownMenu {
 
 const NFTDropDownMenu = ({ children, menu }: INFTDropDownMenu) => {
   return (
+    <div>
+      <Menu as="div" className="relative text-left">
+        <Menu.Button >
+          {children}
+        </Menu.Button>
 
-    <RadixDropDownMenu.Root>
-      <RadixDropDownMenu.Trigger asChild>
-        {children}
-      </RadixDropDownMenu.Trigger>
-
-      <RadixDropDownMenu.Portal >
-        <RadixDropDownMenu.Content className='absolute -right-3 top-1 w-32 divide-y overflow-hidden
-         rounded-md border bg-white  font-semibold shadow dark:bg-gray-900'>
+        <Menu.Items className='absolute right-0 top-9 z-50 inline-block
+         w-32 divide-y overflow-hidden rounded-md border bg-white font-semibold shadow dark:bg-gray-900'>
           {
             menu.map((item, index) => (
-              <RadixDropDownMenu.Item onClick={item.onClick} key={index}>
-                <button className="w-full p-1 outline-none hover:bg-blue-500 hover:text-white">
+              <Menu.Item key={index}>
+                <button onClick={item.onClick} className="w-full bg-white p-1 outline-none hover:bg-blue-500 hover:text-white">
                   {item.label}
                 </button>
-              </RadixDropDownMenu.Item>
+              </Menu.Item>
             ))
           }
-        </RadixDropDownMenu.Content>
-      </RadixDropDownMenu.Portal>
-    </RadixDropDownMenu.Root>
+        </Menu.Items>
+      </Menu>
+    </div>
   )
 }
 

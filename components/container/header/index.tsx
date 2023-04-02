@@ -4,7 +4,6 @@ import ThemeSwitch from './theme-switch'
 import Wallet from './wallet'
 import Logo from '~/public/emoji.svg'
 import Link from 'next/link'
-import { NAVCONFIG } from '~/config/nav'
 
 const Header = () => {
   return (
