@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Inter } from '@next/font/google'
+import { Inter } from 'next/font/google'
 import Head from './head'
 import Header from './header'
 import Footer from './footer'
