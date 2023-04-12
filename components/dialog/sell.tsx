@@ -1,4 +1,4 @@
-import { useContract } from "@thirdweb-dev/react"
+import { useContract, useCreateDirectListing } from "@thirdweb-dev/react"
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk"
 import { useRef, useState } from "react"
 import { toast } from "react-hot-toast"
@@ -12,6 +12,7 @@ export interface ISellDialogProps extends IBaseDialogProps {
 const SellDialog = ({ isOpen, closeModal, tokenId }: ISellDialogProps) => {
   const ref = useRef<HTMLInputElement>(null)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
+  const { mutateAsync } = useCreateDirectListing(contract)
   const [isLoading, setIsLoading] = useState(false)
   const sell = async () => {
     if (ref.current?.value) {
@@ -26,7 +27,7 @@ const SellDialog = ({ isOpen, closeModal, tokenId }: ISellDialogProps) => {
       }
       setIsLoading(true)
       toast.promise(
-        contract?.direct.createListing(listing) ?? new Promise(() => null),
+        mutateAsync(listing),
         {
           loading: 'processing...',
           success: "Sell successfull",

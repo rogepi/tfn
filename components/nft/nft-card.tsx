@@ -3,7 +3,7 @@ import Image from "next/image"
 import { ProfileNFT } from "~/hooks/use-nfts"
 import NFTDropDownMenu, { INFTDropDownMenuItem } from "../page-ui/nft-dropdown-menu"
 import { useRef, useState } from "react"
-import { useBurnNFT, useContract, useListing } from "@thirdweb-dev/react"
+import { useBurnNFT, useCancelDirectListing, useCancelListing, useContract, useListing } from "@thirdweb-dev/react"
 import { ADDRESS } from "~/config/address"
 
 import { FireIcon, InformationCircleIcon, XMarkIcon } from "@heroicons/react/24/solid"
@@ -11,9 +11,9 @@ import { useRouter } from "next/router"
 import { toast } from "react-hot-toast"
 import Dialog from "../dialog"
 import SellDialog from "../dialog/sell"
+import { ListingType } from "@thirdweb-dev/sdk"
 
 const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
-  const [tokenId, setTokenId] = useState<string>()
   const router = useRouter()
   const item = nft
 
@@ -34,8 +34,9 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
   // cancel
   const [isCancelOpen, setIsCancelOpen] = useState(false)
   const { contract: market_contract } = useContract(ADDRESS.MARKETPLACE, "marketplace")
+  const { mutateAsync: cancelMutate } = useCancelListing(market_contract)
   const cancelListing = async (id: string) => {
-    toast.promise(market_contract?.direct.cancelListing(id) ?? new Promise(() => null),
+    toast.promise(cancelMutate({ id, type: ListingType.Direct }),
       {
         loading: 'Cancel...',
         success: 'Cancel succeesfull',
@@ -80,7 +81,7 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
     <div
       className="flex h-60 w-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-md
  shadow-md  dark:border dark:border-gray-600" key={item.id}>
-      <Link href={`/nft/${item.id}`}>
+      <Link href={`/nft/${item.id}`} className="overflow-hidden">
         <div className="relative block h-40 w-44 overflow-hidden transition ease-in-out hover:scale-110">
           <Image src={item.image} alt={item.name} fill sizes="100" />
         </div>

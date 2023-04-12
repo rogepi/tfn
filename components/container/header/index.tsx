@@ -4,6 +4,7 @@ import ThemeSwitch from './theme-switch'
 import Wallet from './wallet'
 import Logo from '~/public/emoji.svg'
 import Link from 'next/link'
+import Cart from './cart'
 
 const Header = () => {
   return (
@@ -16,6 +17,7 @@ const Header = () => {
         <Nav />
         <div className="flex items-center space-x-4">
           <ThemeSwitch />
+          <Cart />
           <Link href="/upload">
             <button className="rounded-full bg-blue-500 p-2 px-3 text-sm font-semibold text-white hover:bg-blue-400">
               Upload
