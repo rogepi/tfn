@@ -1,19 +1,38 @@
-import { Fragment } from "react"
+import { Fragment, useState } from "react"
 import { Popover, Transition } from "@headlessui/react"
 import { ShoppingBagIcon } from "@heroicons/react/24/solid"
 import { useAddress } from "@thirdweb-dev/react"
 import useSWR from "swr"
 import { fetcher } from "~/helper/utils/fetcher"
 
-const Cart = () => {
-  // const address = useAddress()
-  // const { data } = useSWR('/api/cart', url => fetcher(url, {
-  //   method: 'GET', body: JSON.stringify({
-  //     address
-  //   })
-  // }))
+const Cart = ({ id }: { id: string }) => {
+  const address = useAddress()
+  const { data: cart, mutate } = useSWR(`/api/cart?id=${id}`, fetcher)
+  const [nftId, setNftId] = useState('')
+  const addToCart = async () => {
+    if (nftId) {
+      await fetch(`/api/cart?id=${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nftId }),
+      })
+      setNftId('')
+      mutate()
+    }
+  }
 
-  // console.log(data)
+  const removeFromCart = async (nftId: string) => {
+    await fetch(`/api/cart?id=${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ nftId }),
+    })
+    mutate()
+  }
 
   return (
     <div className=" relative w-full max-w-sm px-4">
