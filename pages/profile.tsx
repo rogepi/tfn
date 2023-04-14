@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import NFTList from '~/components/page-ui/nft-list'
 import { useNFTs } from '~/hooks/use-nfts'
-import { useAddress, useLogin, useUser } from '@thirdweb-dev/react'
+import { useAddress } from '@thirdweb-dev/react'
 import ConnectButton from '~/components/button/connect'
 
 const Profile: NextPage = () => {
@@ -26,26 +26,16 @@ const Profile: NextPage = () => {
     setActive(item)
   }
 
-  const { user, isLoggedIn, } = useUser()
-  const [secret, setSecret] = useState()
-  const getSecret = async () => {
-    const res = await fetch("/api/secret")
-    const data = await res.json()
-    setSecret(data.message)
-  }
-
-  console.log('user', user)
 
   return (
     <>
       <section className="mt-10 mb-5 space-y-5">
-        <h1 className="text-5xl">Profile</h1>
+        <h1 className="text-5xl">Proile</h1>
         <div className="text-xl text-gray-600">
           Manage your NFTs
         </div>
       </section>
       {
-        isLoggedIn &&
         <div>
           <div className="mb-3 flex items-center gap-3 font-bold">
             {

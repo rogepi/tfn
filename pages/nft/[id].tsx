@@ -19,6 +19,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 interface INFTwithPrice {
   nft: NFT
   price?: string
+  listingId?: string
 }
 
 export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = async (context) => {
@@ -29,6 +30,7 @@ export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = a
   let _nft: INFTwithPrice = {} as INFTwithPrice
   if (isSales) {
     _nft.price = isSales.buyoutCurrencyValuePerToken.displayValue
+    _nft.listingId = isSales.id
   }
   _nft.nft = nft
   return {
@@ -104,8 +106,8 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
 
         <div className='mt-10 flex gap-10'>
           {
-            !isMe &&
-            <button onClick={() => buy(nftWithPrice.nft.metadata.id)} disabled={isLoading} className='flex h-16 w-40 items-center
+            !isMe && nftWithPrice.price &&
+            <button onClick={() => buy(nftWithPrice.listingId as string)} disabled={isLoading} className='flex h-16 w-40 items-center
             justify-center rounded-md bg-blue-500 text-xl font-semibold text-white hover:bg-blue-400'>
               {isLoading ? 'Processing...' : 'Buy'}</button>
           }

@@ -23,6 +23,7 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
   const { contract } = useContract(ADDRESS.NFT_COLLECTION)
   const { mutateAsync } = useBurnNFT(contract)
   const burnNFT = async (id: string) => {
+    setIsBurnOpen(false)
     toast.promise(mutateAsync({ tokenId: id }), {
       loading: 'Burning...',
       success: 'Burn succeesfull',
@@ -36,9 +37,10 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
   const { contract: market_contract } = useContract(ADDRESS.MARKETPLACE, "marketplace")
   const { mutateAsync: cancelMutate } = useCancelListing(market_contract)
   const cancelListing = async (id: string) => {
+    setIsCancelOpen(false)
     toast.promise(cancelMutate({ id, type: ListingType.Direct }),
       {
-        loading: 'Cancel...',
+        loading: 'Canceling...',
         success: 'Cancel succeesfull',
         error: 'Cancel error'
       })

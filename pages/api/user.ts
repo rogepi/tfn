@@ -2,24 +2,22 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { redis } from '~/helper/redis'
 
 interface UserRequestBody {
-  id: string;
   avatarUrl?: string;
   username?: string;
 }
 
 function validateRequestBody(body: UserRequestBody) {
-  if (!body.id) {
-    throw new Error('Missing required field: id')
+  if (!body) {
+    throw new Error('Missing request body')
   }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method, body } = req
+  const { method, body, query } = req
+  const id = query.id as string
 
   try {
-    validateRequestBody(body)
-
-    const userKey = `user:${body.id}`
+    const userKey = `user:${id}`
 
     switch (method) {
       case 'GET': {
@@ -33,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ data })
       }
       case 'PUT': {
+        validateRequestBody(body)
         const commands = redis.pipeline()
         if (body.avatarUrl) {
           commands.hset(userKey, { avatarUrl: body.avatarUrl })

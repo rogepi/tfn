@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { ChainId, ThirdwebProvider } from '@thirdweb-dev/react'
 import { ThemeProvider } from 'next-themes'
+import { SWRConfig } from 'swr'
+import { fetcher } from './utils/fetcher'
 
 const activeChainId = ChainId.Goerli
 
@@ -14,7 +16,9 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       <ThemeProvider attribute="class">
-        {children}
+        <SWRConfig value={{ fetcher }}>
+          {children}
+        </SWRConfig>
       </ThemeProvider>
     </ThirdwebProvider>
   )

@@ -37,7 +37,7 @@ const UploadForm = () => {
   // form & mint
   const { contract } = useContract(ADDRESS.NFT_COLLECTION)
   const address = useAddress()
-  const { mutateAsync: mintNFT, isLoading, } = useMintNFT(contract)
+  const { mutateAsync: mintNFT, isLoading } = useMintNFT(contract)
   const onSubmit = handleSubmit(async (data) => {
     // setFormState('check')
     console.log(data)
@@ -57,7 +57,10 @@ const UploadForm = () => {
             success: 'Upload successfull!',
             error: 'Somthing Error'
           }
-        )
+        ).then(() => {
+
+          reset()
+        })
       }
     }
   })

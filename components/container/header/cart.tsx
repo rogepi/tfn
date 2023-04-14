@@ -1,38 +1,13 @@
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import { Popover, Transition } from "@headlessui/react"
 import { ShoppingBagIcon } from "@heroicons/react/24/solid"
 import { useAddress } from "@thirdweb-dev/react"
-import useSWR from "swr"
-import { fetcher } from "~/helper/utils/fetcher"
+import { useCart } from "~/hooks/use-cart"
+import Button from "~/components/button"
 
-const Cart = ({ id }: { id: string }) => {
-  const address = useAddress()
-  const { data: cart, mutate } = useSWR(`/api/cart?id=${id}`, fetcher)
-  const [nftId, setNftId] = useState('')
-  const addToCart = async () => {
-    if (nftId) {
-      await fetch(`/api/cart?id=${id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nftId }),
-      })
-      setNftId('')
-      mutate()
-    }
-  }
-
-  const removeFromCart = async (nftId: string) => {
-    await fetch(`/api/cart?id=${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ nftId }),
-    })
-    mutate()
-  }
+const Cart = () => {
+  const id = useAddress()
+  const { cart } = useCart(id as string)
 
   return (
     <div className=" relative w-full max-w-sm px-4">
@@ -60,7 +35,7 @@ const Cart = ({ id }: { id: string }) => {
 
                   </div>
                   <div>
-                    <button>Settlement</button>
+                    <Button className="w-full">Settlement</Button>
                   </div>
                 </Popover.Panel>
               </Transition>

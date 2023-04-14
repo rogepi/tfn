@@ -19,7 +19,7 @@ const Wallet = () => {
         <Avatar address={address} />
       ) : (
 
-        <ConnectButton className="text-sm" />
+        <ConnectButton className="text-sm w-36" />
       )}
     </div>
   )
