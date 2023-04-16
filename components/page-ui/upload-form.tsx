@@ -1,11 +1,11 @@
 import { useRef, useState } from "react"
 import Image from "next/image"
-import { useAddress, useContract, useMintNFT } from "@thirdweb-dev/react"
+import { useAddress, useContract, useMintNFT, useStorageUpload } from "@thirdweb-dev/react"
 import { useForm } from "react-hook-form"
 import { DocumentArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { IMetadata } from "~/helper/types"
 import { ADDRESS } from "~/config/address"
-import { toast, Toaster } from "react-hot-toast"
+import { toast } from "react-hot-toast"
 
 
 const UploadForm = () => {
@@ -34,10 +34,24 @@ const UploadForm = () => {
     }
   }
 
+  // file upload
+  // const { mutateAsync: upload } = useStorageUpload()
+  // const uploadToIpfs = async (file: File) => {
+  //   const uploadUrl = await upload({
+  //     data: [file],
+  //     options: { uploadWithGatewayUrl: true, uploadWithoutDirectory: true },
+  //   })
+  // }
+
+
   // form & mint
   const { contract } = useContract(ADDRESS.NFT_COLLECTION)
   const address = useAddress()
   const { mutateAsync: mintNFT, isLoading } = useMintNFT(contract)
+  const onReset = () => {
+    reset()
+    handleCancelClick()
+  }
   const onSubmit = handleSubmit(async (data) => {
     // setFormState('check')
     console.log(data)
@@ -58,16 +72,13 @@ const UploadForm = () => {
             error: 'Somthing Error'
           }
         ).then(() => {
-
-          reset()
+          onReset()
+          fetch('/api/nft/update').then(res => res.json()).then(data => console.log(data))
         })
       }
     }
   })
-  const onReset = () => {
-    reset()
-    handleCancelClick()
-  }
+
 
   // dynamic input
   const properties = watch('properties')

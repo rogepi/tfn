@@ -4,13 +4,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ConnectButton from '~/components/button/connect'
 import NewNFTs from '~/components/page-ui/new-nfts'
-import { getListings } from '~/helper/sdk'
+import { getListingsByRedis } from '~/helper/redis'
 import { INFT } from '~/helper/types'
 import HomeDemoPng from '~/public/images/homedemo.png'
 
 export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async (context) => {
-  const listing = await getListings({ count: 6 })
-  const _listing: INFT[] = listing.map(item => {
+  const listings = await getListingsByRedis(6)
+
+  const _listing: INFT[] = listings.map(item => {
     return {
       id: item.id,
       tokenId: item.asset.id,

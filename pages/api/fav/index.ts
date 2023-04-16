@@ -2,23 +2,25 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { redis } from '~/helper/redis'
 
 interface FavoriteRequestBody {
-  userId: string;
   nftId?: string;
 }
 
 function validateRequestBody(body: FavoriteRequestBody) {
-  if (!body.userId) {
-    throw new Error('Missing required field: userId')
+  if (!body.nftId) {
+    throw new Error('Missing required field: nftId')
   }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method, body } = req
+  const { method, body, query } = req
 
+  const userId = query.userId as string
+  if (!userId) {
+    return res.status(400).json({ message: 'Missing required field: userId' })
+  }
   try {
-    validateRequestBody(body)
 
-    const favoriteKey = `favorite:${body.userId}`
+    const favoriteKey = `favorite:${userId}`
     const nftId = body.nftId
 
     switch (method) {
@@ -27,10 +29,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ data: result })
       }
       case 'POST': {
+        validateRequestBody(body)
         const result = await redis.sadd(favoriteKey, nftId)
         return res.status(200).json({ message: 'NFT added to favorites' })
       }
       case 'DELETE': {
+        validateRequestBody(body)
         const result = await redis.srem(favoriteKey, nftId)
         return res.status(200).json({ message: 'NFT removed from favorites' })
       }

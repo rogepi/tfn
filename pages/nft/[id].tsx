@@ -1,15 +1,18 @@
+import useSWR from 'swr'
 import { CurrencyDollarIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
 import { useAddress, useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
 import { NFT } from '@thirdweb-dev/sdk'
+import clsx from 'clsx'
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { ADDRESS } from '~/config/address'
-import { getListing, getListings, sdk, getNFTs, getNFT } from '~/helper/sdk'
+import { getListingsByRedis, getNFTsByRedis } from '~/helper/redis'
+import { useFav } from '~/hooks/use-fav'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const list = await getNFTs()
+  const list = await getNFTsByRedis()
   const paths = list.map(item => ({ params: { id: item.metadata.id } }))
   return {
     paths, fallback: false
@@ -24,8 +27,9 @@ interface INFTwithPrice {
 
 export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = async (context) => {
   const id = context.params?.id
-  const nft = await getNFT(id as string)
-  const listings = await getListings({})
+  const nfts = await getNFTsByRedis()
+  const listings = await getListingsByRedis()
+  const nft = nfts.find(item => item.metadata.id === id) as NFT
   const isSales = listings.find(item => item.asset.id === nft.metadata.id)
   let _nft: INFTwithPrice = {} as INFTwithPrice
   if (isSales) {
@@ -44,10 +48,24 @@ export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = a
 const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [isLoading, setIsLoading] = useState(false)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
+  const { data: countData, mutate
+  } = useSWR<{ nftId: string, count: number }>(`/api/fav/count?nftId=${nftWithPrice.nft.metadata.id}`)
+
+  const count = countData?.count || 0
 
   const address = useAddress()
-
   const isMe = useMemo(() => address === nftWithPrice.nft.owner, [address, nftWithPrice.nft.owner])
+
+  const { data: favs, fav, cancel } = useFav(address as string)
+  const isFav = (favs?.data?.find) && (favs.data)?.find(item => item == nftWithPrice.nft.metadata.id)
+  const handleFav = () => {
+    if (isFav) {
+      cancel(nftWithPrice.nft.metadata.id)
+    } else {
+      fav(nftWithPrice.nft.metadata.id)
+    }
+    mutate({ nftId: nftWithPrice.nft.metadata.id, count: isFav ? count - 1 : count + 1 }, false)
+  }
 
   const networkMismatch = useNetworkMismatch()
   const [, switchNetwork] = useNetwork()
@@ -60,6 +78,8 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
     await contract?.buyoutListing(id, 1)
     // console.log(result?.receipt.status)
     setIsLoading(false)
+    fetch('/api/nft/update')
+    fetch('/api/listing/update')
   }
 
   return (
@@ -70,12 +90,13 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
         </div>
       </div>
       <div>
-        <div className='text-4xl font-bold'>
+        <div className='flex text-6xl font-bold'>
           {nftWithPrice.nft.metadata.name}
+          <div className='mt-1 text-sm text-gray-600'>
+            #{nftWithPrice.nft.metadata.id}
+          </div>
         </div>
-        <div className='mt-1 text-sm text-gray-600'>
-          tokenId  #{nftWithPrice.nft.metadata.id}
-        </div>
+
         <div className='my-3 text-xs'>Owned by
           <Link className='ml-1 text-blue-600' href={''}>
             {isMe ? 'me' : nftWithPrice.nft.owner}
@@ -111,12 +132,13 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
             justify-center rounded-md bg-blue-500 text-xl font-semibold text-white hover:bg-blue-400'>
               {isLoading ? 'Processing...' : 'Buy'}</button>
           }
-          <button className='flex h-16 w-32 items-center justify-center
-            rounded-md bg-rose-500 text-xl font-semibold text-white hover:bg-rose-400'>
-            <HeartIcon className='w-8' /></button>
+          <button onClick={handleFav} className={clsx('flex h-16 w-32 items-center justify-center gap-1 rounded-md  text-xl font-semibold text-white hover:bg-rose-400',
+            isFav ? 'bg-rose-500' : 'border border-gray-300 bg-gray-300')
+          }>
+            <HeartIcon className='w-8' />{count}</button>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

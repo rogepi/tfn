@@ -33,7 +33,9 @@ const SellDialog = ({ isOpen, closeModal, tokenId }: ISellDialogProps) => {
           success: "Sell successfull",
           error: 'Sell error'
         }
-      )
+      ).then(() => {
+        fetch('/api/listing/update')
+      })
       setIsLoading(false)
       closeModal()
     } else {

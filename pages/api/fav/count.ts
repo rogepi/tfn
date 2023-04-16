@@ -17,11 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     favoriteKeys.forEach((key) => {
       pipeline.sismember(key, nftId)
     })
-    console.log(favoriteKeys)
     const results = await pipeline.exec()
-    console.log(results)
     const count = results.filter((result: any) => result === 1).length
-    console.log(count)
     const responseBody: NftFavoriteCountResponseBody = {
       nftId: nftId as string,
       count,
