@@ -6,6 +6,7 @@ import { DocumentArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { IMetadata } from "~/helper/types"
 import { ADDRESS } from "~/config/address"
 import { toast } from "react-hot-toast"
+import { useRouter } from "next/router"
 
 
 const UploadForm = () => {
@@ -52,6 +53,7 @@ const UploadForm = () => {
     reset()
     handleCancelClick()
   }
+  const router = useRouter()
   const onSubmit = handleSubmit(async (data) => {
     // setFormState('check')
     console.log(data)
@@ -74,6 +76,7 @@ const UploadForm = () => {
         ).then(() => {
           onReset()
           fetch('/api/nft/update').then(res => res.json()).then(data => console.log(data))
+          router.push('/profile')
         })
       }
     }
