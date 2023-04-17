@@ -1,6 +1,6 @@
 import { useRef, useState } from "react"
 import Image from "next/image"
-import { useAddress, useContract, useMintNFT, useStorageUpload } from "@thirdweb-dev/react"
+import { useAddress, useContract, useMintNFT } from "@thirdweb-dev/react"
 import { useForm } from "react-hook-form"
 import { DocumentArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { IMetadata } from "~/helper/types"
