@@ -1,5 +1,5 @@
 import { NextPage } from 'next'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import NFTList from '~/components/page-ui/nft-list'
 import { useNFTs } from '~/hooks/use-nfts'
@@ -25,7 +25,6 @@ const Profile: NextPage = () => {
   const activeToggle = (item: string) => {
     setActive(item)
   }
-
 
   return (
     <>

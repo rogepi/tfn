@@ -1,7 +1,7 @@
-import useSWR from 'swr'
+import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 import { CurrencyDollarIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
-import { useAddress, useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
-import { NFT } from '@thirdweb-dev/sdk'
+import { useAddress, useBuyNow, useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
+import { ListingType, NFT } from '@thirdweb-dev/sdk'
 import clsx from 'clsx'
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
@@ -10,12 +10,14 @@ import { useMemo, useState } from 'react'
 import { ADDRESS } from '~/config/address'
 import { getListingsByRedis, getNFTsByRedis } from '~/helper/redis'
 import { useFav } from '~/hooks/use-fav'
+import { fetcher } from '~/helper/utils/fetcher'
+import { toast } from 'react-hot-toast'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const list = await getNFTsByRedis()
   const paths = list.map(item => ({ params: { id: item.metadata.id } }))
   return {
-    paths, fallback: false
+    paths, fallback: true
   }
 }
 
@@ -25,7 +27,7 @@ interface INFTwithPrice {
   listingId?: string
 }
 
-export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = async (context) => {
+export const getStaticProps: GetStaticProps<{ fallback: { [key: string]: INFTwithPrice }, id: string }> = async (context) => {
   const id = context.params?.id
   const nfts = await getNFTsByRedis()
   const listings = await getListingsByRedis()
@@ -40,16 +42,24 @@ export const getStaticProps: GetStaticProps<{ nftWithPrice: INFTwithPrice }> = a
   return {
     props: {
       // listing
-      nftWithPrice: _nft
+      fallback: {
+        [`/api/nft/detail?id=${id}`]: _nft
+      },
+      id: id as string
     }
   }
 }
 
-const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const NFTDetail = ({ id }: { id: string }) => {
+  const { data, mutate: pageMutate } = useSWR<{ data: INFTwithPrice }>([`/api/nft/detail?id=${id}`], fetcher)
+  //   const { data } = useSWR<{ data: INFTwithPrice }>([`/api/nft/detail?id=${id}`], fetcher)
+
+  const nftWithPrice = data?.data || { nft: { owner: '', metadata: { image: '' } } } as INFTwithPrice
+  console.log(nftWithPrice)
   const [isLoading, setIsLoading] = useState(false)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
   const { data: countData, mutate
-  } = useSWR<{ nftId: string, count: number }>(`/api/fav/count?nftId=${nftWithPrice.nft.metadata.id}`)
+  } = useSWR<{ nftId: string, count: number }>(`/api/fav/count?nftId=${id}`)
 
   const count = countData?.count || 0
 
@@ -57,29 +67,37 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
   const isMe = useMemo(() => address === nftWithPrice.nft.owner, [address, nftWithPrice.nft.owner])
 
   const { data: favs, fav, cancel } = useFav(address as string)
-  const isFav = (favs?.data?.find) && (favs.data)?.find(item => item == nftWithPrice.nft.metadata.id)
+  const isFav = (favs?.data?.find) && (favs.data)?.find(item => item == id)
   const handleFav = () => {
     if (isFav) {
-      cancel(nftWithPrice.nft.metadata.id)
+      cancel(id)
     } else {
-      fav(nftWithPrice.nft.metadata.id)
+      fav(id)
     }
-    mutate({ nftId: nftWithPrice.nft.metadata.id, count: isFav ? count - 1 : count + 1 }, false)
+    mutate({ nftId: id, count: isFav ? count - 1 : count + 1 }, false)
   }
 
   const networkMismatch = useNetworkMismatch()
   const [, switchNetwork] = useNetwork()
+  const { mutateAsync: buyNFT } = useBuyNow(contract)
   const buy = async (id: string) => {
     if (networkMismatch) {
       switchNetwork && switchNetwork(5)
       return
     }
     setIsLoading(true)
+    toast.promise(buyNFT({ id, buyAmount: 1, type: ListingType.Direct }), {
+      loading: 'Buying...',
+      success: 'Buy success',
+      error: 'Buy failed'
+    })
     await contract?.buyoutListing(id, 1)
     // console.log(result?.receipt.status)
     setIsLoading(false)
-    fetch('/api/nft/update')
-    fetch('/api/listing/update')
+    const _data = { data: { ...nftWithPrice, nft: { ...nftWithPrice.nft, owner: address } } } as { data: INFTwithPrice }
+    pageMutate(_data, false)
+    await fetch('/api/nft/update')
+    await fetch('/api/listing/update')
   }
 
   return (
@@ -142,4 +160,24 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
   )
 }
 
-export default NFTDetail
+// const NFTDetail = ({ id }: { id: string }) => {
+//   const { data, mutate } = useSWR<{ data: INFTwithPrice }>([`/api/nft/detail?id=${id}`], fetcher)
+//   const nftWithPrice = data?.data as INFTwithPrice || { nft: { metadata: { name: '' }, owner: '' }, price: 0 }
+//   const address = useAddress()
+//   const isMe = useMemo(() => address === nftWithPrice.nft.owner, [address, nftWithPrice.nft.owner])
+//   return (
+//     <div>
+//       {nftWithPrice.nft.metadata.name}
+//       {isMe}
+//       <button onClick={() => { mutate() }} >muetate</button>
+//     </div>
+//   )
+// }
+
+export default function Page({ fallback, id }: InferGetStaticPropsType<typeof getStaticProps>) {
+  return (
+    <SWRConfig value={{ fallback }}>
+      <NFTDetail id={id} />
+    </SWRConfig>
+  )
+}

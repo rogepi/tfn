@@ -28,7 +28,7 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
       loading: 'Burning...',
       success: 'Burn succeesfull',
       error: 'Burn error'
-    })
+    }).then(() => fetch('/api/nft/update'))
   }
 
 
@@ -43,8 +43,7 @@ const NFTCard = ({ nft }: { nft: ProfileNFT }) => {
         loading: 'Canceling...',
         success: 'Cancel succeesfull',
         error: 'Cancel error'
-      })
-
+      }).then(() => fetch('/api/listing/update'))
   }
 
   // sell

@@ -46,9 +46,11 @@ const QA = () => {
                               } h-5 w-5 text-blue-500`}
                           />
                         </Disclosure.Button>
+
                         <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
                           <span className='text-lg'>{item.a}</span>
                         </Disclosure.Panel>
+
                       </>
                     )}
                   </Disclosure>
