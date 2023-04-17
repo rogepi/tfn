@@ -3,7 +3,7 @@ import Image from "next/image"
 import { ProfileNFT } from "~/hooks/use-nfts"
 import NFTDropDownMenu, { INFTDropDownMenuItem } from "../page-ui/nft-dropdown-menu"
 import { useRef, useState } from "react"
-import { useBurnNFT, useCancelDirectListing, useCancelListing, useContract, useListing } from "@thirdweb-dev/react"
+import { useBurnNFT,useCancelListing, useContract } from "@thirdweb-dev/react"
 import { ADDRESS } from "~/config/address"
 
 import { FireIcon, InformationCircleIcon, XMarkIcon } from "@heroicons/react/24/solid"

@@ -28,7 +28,6 @@ const NFTDetail = () => {
   const { data, mutate: pageMutate } = useSWR<{ data: INFTwithPrice }>(`/api/nft/detail?id=${id}`, fetcher)
 
   const nftWithPrice = data?.data || { nft: { owner: '', metadata: { image: '' } } } as INFTwithPrice
-  console.log(nftWithPrice)
   const [isLoading, setIsLoading] = useState(false)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
   const { data: countData, mutate
@@ -65,7 +64,6 @@ const NFTDetail = () => {
       error: 'Buy failed'
     })
     await contract?.buyoutListing(id, 1)
-    // console.log(result?.receipt.status)
     setIsLoading(false)
     const _data = { data: { ...nftWithPrice, nft: { ...nftWithPrice.nft, owner: address } } } as { data: INFTwithPrice }
     pageMutate(_data, false)

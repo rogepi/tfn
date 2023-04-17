@@ -5,6 +5,8 @@ import NFTList from '~/components/page-ui/nft-list'
 import { useNFTs } from '~/hooks/use-nfts'
 import { useAddress } from '@thirdweb-dev/react'
 import ConnectButton from '~/components/button/connect'
+import { LoaderIcon } from 'react-hot-toast'
+import Loading from '~/components/page-ui/loading'
 
 const Profile: NextPage = () => {
   const [active, setActive] = useState('all')
@@ -53,7 +55,8 @@ const Profile: NextPage = () => {
               (
                 (isLoading || showList === undefined) ?
                   <div className='min-h-[300px] pt-[10vh] text-center'>
-                    loading...</div>
+                    <Loading />
+                  </div>
                   :
                   <NFTList nftList={showList} />)
               :
