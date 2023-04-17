@@ -28,11 +28,9 @@ const Avatar = ({ address }: { address: string }) => {
   return (
     <div >
       <Menu as="div" className="relative text-left">
-        <div>
-          <Menu.Button className="flex">
-            <AvatarImage address={address} />
-          </Menu.Button>
-        </div>
+        <Menu.Button className="flex">
+          <AvatarImage address={address} />
+        </Menu.Button>
         <Transition
           as={Fragment}
           enter="transition ease-out duration-100"

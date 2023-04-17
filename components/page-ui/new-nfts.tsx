@@ -8,7 +8,7 @@ const NewNFTs = ({ listing }: { listing: INFT[] }) => {
       <div className="text-3xl">New NFTs</div>
       <div className="my-8 flex  gap-5">
         {listing.map(item =>
-          <Link href={`/nft/${item.tokenId}`} className="flex h-60 w-44 flex-col items-center justify-center
+          <Link href={`/nft/${item.tokenId}`} className="flex h-60 w-48 flex-col items-center justify-center
           gap-3 overflow-hidden rounded-md border shadow-md hover:border-gray-300 dark:border-slate-500" key={item.id}>
             <div className="relative block h-full w-full transition ease-in-out hover:scale-110">
               <Image src={item.image as string} alt={item.name as string} fill sizes="100" />

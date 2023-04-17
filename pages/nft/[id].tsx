@@ -85,7 +85,7 @@ const NFTDetail = ({ nftWithPrice }: InferGetStaticPropsType<typeof getStaticPro
   return (
     <div className='flex gap-16'>
       <div className='h-[30vw] w-[30vw] border p-3'>
-        <div className="relative block h-full w-full">
+        <div className="relative block h-full w-full transition ease-in-out hover:scale-110">
           <Image src={nftWithPrice.nft.metadata.image as string} alt={nftWithPrice.nft.metadata.name as string} fill sizes="100" />
         </div>
       </div>
