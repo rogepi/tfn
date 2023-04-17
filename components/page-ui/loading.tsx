@@ -4,7 +4,7 @@ import LoadingIcon from '~/public/images/loading.svg'
 
 const Loading = ({ className }: { className?: string }) => {
   return (
-    <Image src={LoadingIcon} alt="loading..." className={clsx('mx-auto', className)} width={40} height={40} />
+    <Image src={LoadingIcon} alt="loading..." className={clsx('mx-auto animate-spin', className)}  />
   )
 
 }
