@@ -12,14 +12,9 @@ import { getListingsByRedis, getNFTsByRedis } from '~/helper/redis'
 import { useFav } from '~/hooks/use-fav'
 import { fetcher } from '~/helper/utils/fetcher'
 import { toast } from 'react-hot-toast'
+import { useRouter } from 'next/router'
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const list = await getNFTsByRedis()
-  const paths = list.map(item => ({ params: { id: item.metadata.id } }))
-  return {
-    paths, fallback: true
-  }
-}
+
 
 interface INFTwithPrice {
   nft: NFT
@@ -27,32 +22,10 @@ interface INFTwithPrice {
   listingId?: string
 }
 
-export const getStaticProps: GetStaticProps<{ fallback: { [key: string]: INFTwithPrice }, id: string }> = async (context) => {
-  const id = context.params?.id
-  const nfts = await getNFTsByRedis()
-  const listings = await getListingsByRedis()
-  const nft = nfts.find(item => item.metadata.id === id) as NFT
-  const isSales = listings.find(item => item.asset.id === nft.metadata.id)
-  let _nft: INFTwithPrice = {} as INFTwithPrice
-  if (isSales) {
-    _nft.price = isSales.buyoutCurrencyValuePerToken.displayValue
-    _nft.listingId = isSales.id
-  }
-  _nft.nft = nft
-  return {
-    props: {
-      // listing
-      fallback: {
-        [`/api/nft/detail?id=${id}`]: _nft
-      },
-      id: id as string
-    }
-  }
-}
-
-const NFTDetail = ({ id }: { id: string }) => {
-  const { data, mutate: pageMutate } = useSWR<{ data: INFTwithPrice }>([`/api/nft/detail?id=${id}`], fetcher)
-  //   const { data } = useSWR<{ data: INFTwithPrice }>([`/api/nft/detail?id=${id}`], fetcher)
+const NFTDetail = () => {
+  const router = useRouter()
+  const id = router.query.id as string
+  const { data, mutate: pageMutate } = useSWR<{ data: INFTwithPrice }>(`/api/nft/detail?id=${id}`, fetcher)
 
   const nftWithPrice = data?.data || { nft: { owner: '', metadata: { image: '' } } } as INFTwithPrice
   console.log(nftWithPrice)
@@ -160,24 +133,4 @@ const NFTDetail = ({ id }: { id: string }) => {
   )
 }
 
-// const NFTDetail = ({ id }: { id: string }) => {
-//   const { data, mutate } = useSWR<{ data: INFTwithPrice }>([`/api/nft/detail?id=${id}`], fetcher)
-//   const nftWithPrice = data?.data as INFTwithPrice || { nft: { metadata: { name: '' }, owner: '' }, price: 0 }
-//   const address = useAddress()
-//   const isMe = useMemo(() => address === nftWithPrice.nft.owner, [address, nftWithPrice.nft.owner])
-//   return (
-//     <div>
-//       {nftWithPrice.nft.metadata.name}
-//       {isMe}
-//       <button onClick={() => { mutate() }} >muetate</button>
-//     </div>
-//   )
-// }
-
-export default function Page({ fallback, id }: InferGetStaticPropsType<typeof getStaticProps>) {
-  return (
-    <SWRConfig value={{ fallback }}>
-      <NFTDetail id={id} />
-    </SWRConfig>
-  )
-}
+export default NFTDetail
