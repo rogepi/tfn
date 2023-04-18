@@ -3,18 +3,14 @@ import { CurrencyDollarIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/soli
 import { useAddress, useBuyNow, useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
 import { ListingType, NFT } from '@thirdweb-dev/sdk'
 import clsx from 'clsx'
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { ADDRESS } from '~/config/address'
-import { getListingsByRedis, getNFTsByRedis } from '~/helper/redis'
 import { useFav } from '~/hooks/use-fav'
 import { fetcher } from '~/helper/utils/fetcher'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router'
-
-
 
 interface INFTwithPrice {
   nft: NFT

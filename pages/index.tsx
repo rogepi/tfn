@@ -1,15 +1,18 @@
 import { useAddress } from '@thirdweb-dev/react'
+import { NFT } from '@thirdweb-dev/sdk'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import ConnectButton from '~/components/button/connect'
-import NewNFTs from '~/components/page-ui/new-nfts'
-import { getListingsByRedis } from '~/helper/redis'
+import SaleList from '~/components/nft/sale-list'
+import NFTList from '~/components/nft/nft-list'
+import { getListingsByRedis, getNFTsByRedis } from '~/helper/redis'
 import { INFT } from '~/helper/types'
 import HomeDemoPng from '~/public/images/homedemo.png'
 
-export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async (context) => {
-  const listings = await getListingsByRedis(6)
+export const getServerSideProps: GetServerSideProps<{ listing: INFT[], nft: NFT[] }> = async (context) => {
+  const listings = await getListingsByRedis(5)
+  const nfts = await getNFTsByRedis(5)
 
   const _listing: INFT[] = listings.map(item => {
     return {
@@ -22,12 +25,13 @@ export const getServerSideProps: GetServerSideProps<{ listing: INFT[] }> = async
   })
   return {
     props: {
-      listing: _listing.reverse()
+      listing: _listing.reverse(),
+      nft: nfts.reverse()
     }
   }
 }
 
-function Home({ listing }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Home({ listing, nft }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const address = useAddress()
   return (
     <>
@@ -42,7 +46,7 @@ function Home({ listing }: InferGetServerSidePropsType<typeof getServerSideProps
             tokens(NFTS). Buy,sell and discover exclusive digital assets.
           </div>
           <div className="flex gap-5">
-            <Link href="/discover">
+            <Link href="/creation">
               <button className="flex h-full items-center rounded-full bg-blue-500 p-4 px-8 text-lg font-semibold text-white hover:bg-blue-400">
                 Explore
               </button>
@@ -65,9 +69,17 @@ function Home({ listing }: InferGetServerSidePropsType<typeof getServerSideProps
         </div>
       </section>
       <section>
-        <NewNFTs listing={listing} />
+        <SaleList list={listing} title="New Listings" />
         <div className='flex justify-center'>
-          <Link href="/discover">
+          <Link href="/market">
+            <button className='flex h-full items-center rounded-full bg-blue-500 p-2 px-4 text-lg font-semibold text-white hover:bg-blue-400'>View More</button>
+          </Link>
+        </div>
+      </section>
+      <section>
+        <NFTList list={nft} title="New Creations" />
+        <div className='flex justify-center'>
+          <Link href="/creation">
             <button className='flex h-full items-center rounded-full bg-blue-500 p-2 px-4 text-lg font-semibold text-white hover:bg-blue-400'>View More</button>
           </Link>
         </div>

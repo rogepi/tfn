@@ -64,6 +64,7 @@ export const getNFT = async (id: string): Promise<NFT> => {
 
 export const getNFTs = async () => {
   const contract = await sdk.getContract(ADDRESS.NFT_COLLECTION, 'nft-collection')
-  return await contract.erc721.getAll()
+  const data = await contract.erc721.getAll()
+  return data.filter(item => item.owner !== '0x0000000000000000000000000000000000000000')
 }
 

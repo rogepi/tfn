@@ -1,5 +1,6 @@
 export const NAVCONFIG = [
-  { title: 'Discover', href: '/discover' },
-  { title: 'Category', href: '/category' },
+  { title: 'Creation', href: '/creation' },
+  { title: 'Market', href: '/market' },
+  // { title: 'Category', href: '/category' },
   { title: 'Q&A', href: '/qa' },
 ]
