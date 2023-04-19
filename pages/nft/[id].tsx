@@ -59,7 +59,6 @@ const NFTDetail = () => {
       success: 'Buy success',
       error: 'Buy failed'
     })
-    await contract?.buyoutListing(id, 1)
     setIsLoading(false)
     const _data = { data: { ...nftWithPrice, nft: { ...nftWithPrice.nft, owner: address } } } as { data: INFTwithPrice }
     pageMutate(_data, false)
