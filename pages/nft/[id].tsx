@@ -1,6 +1,6 @@
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 import { CurrencyDollarIcon, EyeIcon, HeartIcon } from '@heroicons/react/24/solid'
-import { useAddress, useBuyNow, useContract, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
+import { useAddress, useBuyNow, useContract, useContractEvents, useNetwork, useNetworkMismatch, useNFT } from '@thirdweb-dev/react'
 import { ListingType, NFT } from '@thirdweb-dev/sdk'
 import clsx from 'clsx'
 import Image from 'next/image'
@@ -21,19 +21,26 @@ interface INFTwithPrice {
 const NFTDetail = () => {
   const router = useRouter()
   const id = router.query.id as string
+
+  // get nft detail
   const { data, mutate: pageMutate } = useSWR<{ data: INFTwithPrice }>(`/api/nft/detail?id=${id}`, fetcher)
 
+  // public
   const nftWithPrice = data?.data || { nft: { owner: '', metadata: { image: '' } } } as INFTwithPrice
   const [isLoading, setIsLoading] = useState(false)
   const { contract } = useContract(ADDRESS.MARKETPLACE, 'marketplace')
-  const { data: countData, mutate
-  } = useSWR<{ nftId: string, count: number }>(`/api/fav/count?nftId=${id}`)
-
-  const count = countData?.count || 0
-
   const address = useAddress()
   const isMe = useMemo(() => address === nftWithPrice.nft.owner, [address, nftWithPrice.nft.owner])
 
+  // transaction history
+  const { data: events } = useContractEvents(contract, 'NewSale')
+  const myEvents = events?.filter(event => parseInt(event.data?.listingId, 16).toString() === nftWithPrice.listingId)
+  console.log('myEvents', myEvents)
+
+  // fav count
+  const { data: countData, mutate
+  } = useSWR<{ nftId: string, count: number }>(`/api/fav/count?nftId=${id}`)
+  const count = countData?.count || 0
   const { data: favs, fav, cancel } = useFav(address as string)
   const isFav = (favs?.data?.find) && (favs.data)?.find(item => item == id)
   const handleFav = () => {
@@ -45,6 +52,7 @@ const NFTDetail = () => {
     mutate({ nftId: id, count: isFav ? count - 1 : count + 1 }, false)
   }
 
+  // handle buy
   const networkMismatch = useNetworkMismatch()
   const [, switchNetwork] = useNetwork()
   const { mutateAsync: buyNFT } = useBuyNow(contract)
@@ -58,10 +66,13 @@ const NFTDetail = () => {
       loading: 'Buying...',
       success: 'Buy success',
       error: 'Buy failed'
-    })
+    }).then(
+      () => {
+        const _data = { data: { ...nftWithPrice, nft: { ...nftWithPrice.nft, owner: address } } } as { data: INFTwithPrice }
+        pageMutate(_data, false)
+      }
+    )
     setIsLoading(false)
-    const _data = { data: { ...nftWithPrice, nft: { ...nftWithPrice.nft, owner: address } } } as { data: INFTwithPrice }
-    pageMutate(_data, false)
     await fetch('/api/nft/update')
     await fetch('/api/listing/update')
   }

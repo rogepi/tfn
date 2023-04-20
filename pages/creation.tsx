@@ -8,7 +8,7 @@ export const getServerSideProps: GetServerSideProps<{ nfts: NFT[] }> = async (co
 
   return {
     props: {
-      nfts: nfts.reverse()
+      nfts: nfts
     }
   }
 }
