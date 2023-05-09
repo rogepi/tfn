@@ -1,23 +1,22 @@
+# ![tfn](./public/favicon.ico) TFN
+
+A NFT Marketplace power by Thirdweb
+
 ## Getting Started
 
-Create a project using this example:
+Install dependencies using your favorite package manager
 
 ```bash
-npx thirdweb create --template next-typescript-starter
+pnpm install
 ```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-On `pages/_app.tsx`, you'll find our `ThirdwebProvider` wrapping your app, this is necessary for our [hooks](https://portal.thirdweb.com/react) and
-[UI Components](https://portal.thirdweb.com/ui-components) to work.
-
-### Deploy to IPFS
-
-Deploy a copy of your application to IPFS using the following command:
+Copy `.env.example` to `.env` and modify by variable name,then
 
 ```bash
-yarn deploy
+pnpm run dev
 ```
+
+you can also clone this repo and deploy to vercel(The best deploy platform for Next.js)
 
 ## Learn More
 
